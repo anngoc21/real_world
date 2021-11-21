@@ -56,7 +56,7 @@ func main() {
 		}
 		c.HTML(http.StatusOK, "index.tmpl.html", gin.H{
 			"top":  sortTop100(),
-			"last": getLast,
+			"last": getLast(),
 		})
 	})
 
