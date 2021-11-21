@@ -1,60 +1,144 @@
 <html>
-  {{template "header.tmpl.html"}}
-<body>
-  {{template "nav.tmpl.html"}}
+{{template "header.tmpl.html"}}
+<body onload="getLocation()">
+{{template "nav.tmpl.html"}}
 
 <div class="jumbotron text-center">
-  <div class="container">
-    <a href="/" class="lang-logo">
-      <img src="/static/lang-logo.png">
-    </a>
-    <h1>Getting Started with Go on Heroku</h1>
-      <p>This is a sample Go application deployed to Heroku. It's a reasonably simple app - but a good foundation for understanding how to get the most out of the Heroku platform.</p>
-      <a type="button" class="btn btn-lg btn-default" href="https://devcenter.heroku.com/articles/getting-started-with-go"><span class="glyphiconglyphicon-flash"></span> Getting Started with Go</a>
-      <a type="button" class="btn btn-lg btn-primary" href="https://github.com/heroku/real_world"><span class="glyphiconglyphicon-download"></span> Source on GitHub</a>
-  </div>
+    <div class="container">
+        <a href="/" class="lang-logo">
+            <img src="/static/lang-logo.png">
+        </a>
+    </div>
 </div>
 <div class="container">
-  <div class="alert alert-info text-center" role="alert">
-      To deploy your own copy, and learn the fundamentals of the Heroku platform, head over to the <a href="https://devcenter.heroku.com/articles/getting-started-with-go" class="alert-link">Getting Started with Go on Heroku</a> tutorial.
-  </div>
-  <hr>
-  <div class="row">
-    <div class="col-md-6">
-      <h3><span class="glyphicon glyphicon-info-sign"></span> How this sample app works</h3>
-      <ul>
-          <li>This app was deployed to Heroku, either using Git or by using <a href="https://github.com/heroku/real_world">Heroku Button</a> on the repository.</li>
-
-          <li>When Heroku received the source code it used the go tool chain to compile the application along with any vendored dependencies and created a deployable slug.</li>
-          <li>The platform then spins up a dyno, a lightweight container that provides an isolated environment in which the slug can be mounted and executed.</li>
-          <li>You can scale your app, manage it, and deploy over <a href="https://addons.heroku.com/">150 add-on services</a>, from the Dashboard or CLI.</li>
-      </ul>
-    </div>
-    <div class="col-md-6">
-      <h3><span class="glyphicon glyphicon-link"></span> Next Steps</h3>
-      <ul>
-        <li>If you are following the <a href="https://devcenter.heroku.com/articles/getting-started-with-go">Getting Started</a> guide, then please head back to the tutorial and follow the next steps!</li>
-        <li>If you deployed this app by deploying the Heroku Button, then in a command line shell, run:</li>
-        <ul>
-          <li><code>go get github.com/heroku/real_world</code> - this will create a local copy of the source code for the app, compile and install the generated executables in <code>$GOPATH/bin</code></li>
-          <li><code>cd $GOPATH/src/github.com/heroku/real_world</code> - change directory into the local source code repository</li>
-          <li><code>heroku git:remote -a &lt;your-app-name&gt;</code> - associate the Heroku app with the repository</li>
-          <li>You'll now be set up to run the app locally, or <a href="https://devcenter.heroku.com/articles/getting-started-with-go#push-local-changes">deploy changes</a> to Heroku</li>
-        </ul>
-      </ul>
-      <h3><span class="glyphicon glyphicon-link"></span> Helpful Links</h3>
-      <ul>
-        <li><a href="https://www.heroku.com/home">Heroku</a></li>
-        <li><a href="https://devcenter.heroku.com/">Heroku Dev Center</a></li>
-        <li><a href="https://devcenter.heroku.com/articles/getting-started-with-go">Getting Started with Go on Heroku</a></li>
-        <li><a href="https://devcenter.heroku.com/articles/go-support">Heroku Go Support</a></li>
-      </ul>
-    </div>
-  </div> <!-- row -->
     <div class="alert alert-info text-center" role="alert">
-      Please do work through the Getting Started guide, even if you do know how to build such an application. The guide covers the basics of working with Heroku, and will familiarize you with all the concepts you need in order to build and deploy your own apps.
-  </div>
+        <ul id="demo">
+        </ul>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-md-6">
+            <h3><span class="glyphicon glyphicon-info-sign"></span> TOP 100 IPs</h3>
+            <ul>
+                {{ range $top := .top }}
+                <li>{{ .IP }} {{ .Timezone }} {{ .Loc }} {{ .Count }}</li>
+                {{ end }}
+            </ul>
+        </div>
+        <div class="col-md-6">
+            <h3><span class="glyphicon glyphicon-link"></span> Last 100 visitors</h3>
+            <ul>
+                {{ range $last := .last }}
+                <li>{{ .IP }}</li>
+                {{ end }}
+            </ul>
+        </div>
+    </div> <!-- row -->
 </div>
+<script>
+    var x = document.getElementById("demo");
+    var Base64 = {
+        _keyStr: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=", encode: function (e) {
+            var t = "";
+            var n, r, i, s, o, u, a;
+            var f = 0;
+            e = Base64._utf8_encode(e);
+            while (f < e.length) {
+                n = e.charCodeAt(f++);
+                r = e.charCodeAt(f++);
+                i = e.charCodeAt(f++);
+                s = n >> 2;
+                o = (n & 3) << 4 | r >> 4;
+                u = (r & 15) << 2 | i >> 6;
+                a = i & 63;
+                if (isNaN(r)) {
+                    u = a = 64
+                } else if (isNaN(i)) {
+                    a = 64
+                }
+                t = t + this._keyStr.charAt(s) + this._keyStr.charAt(o) + this._keyStr.charAt(u) + this._keyStr.charAt(a)
+            }
+            return t
+        }, decode: function (e) {
+            var t = "";
+            var n, r, i;
+            var s, o, u, a;
+            var f = 0;
+            e = e.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+            while (f < e.length) {
+                s = this._keyStr.indexOf(e.charAt(f++));
+                o = this._keyStr.indexOf(e.charAt(f++));
+                u = this._keyStr.indexOf(e.charAt(f++));
+                a = this._keyStr.indexOf(e.charAt(f++));
+                n = s << 2 | o >> 4;
+                r = (o & 15) << 4 | u >> 2;
+                i = (u & 3) << 6 | a;
+                t = t + String.fromCharCode(n);
+                if (u != 64) {
+                    t = t + String.fromCharCode(r)
+                }
+                if (a != 64) {
+                    t = t + String.fromCharCode(i)
+                }
+            }
+            t = Base64._utf8_decode(t);
+            return t
+        }, _utf8_encode: function (e) {
+            e = e.replace(/\r\n/g, "\n");
+            var t = "";
+            for (var n = 0; n < e.length; n++) {
+                var r = e.charCodeAt(n);
+                if (r < 128) {
+                    t += String.fromCharCode(r)
+                } else if (r > 127 && r < 2048) {
+                    t += String.fromCharCode(r >> 6 | 192);
+                    t += String.fromCharCode(r & 63 | 128)
+                } else {
+                    t += String.fromCharCode(r >> 12 | 224);
+                    t += String.fromCharCode(r >> 6 & 63 | 128);
+                    t += String.fromCharCode(r & 63 | 128)
+                }
+            }
+            return t
+        }, _utf8_decode: function (e) {
+            var t = "";
+            var n = 0;
+            var r = c1 = c2 = 0;
+            while (n < e.length) {
+                r = e.charCodeAt(n);
+                if (r < 128) {
+                    t += String.fromCharCode(r);
+                    n++
+                } else if (r > 191 && r < 224) {
+                    c2 = e.charCodeAt(n + 1);
+                    t += String.fromCharCode((r & 31) << 6 | c2 & 63);
+                    n += 2
+                } else {
+                    c2 = e.charCodeAt(n + 1);
+                    c3 = e.charCodeAt(n + 2);
+                    t += String.fromCharCode((r & 15) << 12 | (c2 & 63) << 6 | c3 & 63);
+                    n += 3
+                }
+            }
+            return t
+        }
+    }
 
+    function getLocation() {
+        $.getJSON('https://ipinfo.io/json', function (data) {
+            for (const property in data) {
+                x.innerHTML += "<li>" + `${property}: ${data[property]}` + "</li>"
+            }
+            setCookie("ipinfo", Base64.encode(JSON.stringify(data)), 10)
+        });
+    }
+
+    function setCookie(cname, cvalue, exdays) {
+        const d = new Date();
+        d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+        let expires = "expires=" + d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    }
+</script>
 </body>
 </html>
