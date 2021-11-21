@@ -56,7 +56,7 @@ func main() {
 		}
 		c.HTML(http.StatusOK, "index.tmpl.html", gin.H{
 			"top":  sortTop100(),
-			"last": getLast(),
+			"last": getLast,
 		})
 	})
 
@@ -64,7 +64,7 @@ func main() {
 }
 func getLast() []*IPInfo {
 	sort.Slice(IpInfos, func(i, j int) bool {
-		if IpInfos[i].Time < IpInfos[j].Time {
+		if IpInfos[i].Time > IpInfos[j].Time {
 			return true
 		}
 		return false
@@ -76,7 +76,7 @@ func getLast() []*IPInfo {
 }
 func sortTop100() []*IPInfo {
 	sort.Slice(IpInfos, func(i, j int) bool {
-		if IpInfos[i].Count < IpInfos[j].Count {
+		if IpInfos[i].Count > IpInfos[j].Count {
 			return true
 		}
 		return false
