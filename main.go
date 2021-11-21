@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"sort"
 )
 
 type IPInfo struct {
@@ -23,6 +24,7 @@ type IPInfo struct {
 	Timezone string `json:"timezone"`
 	Readme   string `json:"readme"`
 	Count    int64
+	Time     int64
 }
 
 func (receiver IPInfo) string() string {
@@ -49,25 +51,52 @@ func main() {
 			ip := IPInfo{}
 			err := json.Unmarshal([]byte(sDec), &ip)
 			if err == nil {
-				flag := false
-				for _, p := range IpInfos {
-					if p.IP == ip.IP {
-						p.Count += 1
-						flag = true
-						break
-					}
-				}
-				if !flag {
-					ip.Count = 2
-					IpInfos = append(IpInfos, &ip)
-				}
+				addIPInfo(ip)
 			}
 		}
 		c.HTML(http.StatusOK, "index.tmpl.html", gin.H{
-			"top":  IpInfos,
-			"last": IpInfos,
+			"top":  sortTop100(),
+			"last": getLast(),
 		})
 	})
 
 	router.Run(":" + port)
+}
+func getLast() []*IPInfo {
+	sort.Slice(IpInfos, func(i, j int) bool {
+		if IpInfos[i].Time < IpInfos[j].Time {
+			return true
+		}
+		return false
+	})
+	if len(IpInfos) > 100 {
+		return IpInfos[:100]
+	}
+	return IpInfos
+}
+func sortTop100() []*IPInfo {
+	sort.Slice(IpInfos, func(i, j int) bool {
+		if IpInfos[i].Count < IpInfos[j].Count {
+			return true
+		}
+		return false
+	})
+	if len(IpInfos) > 100 {
+		return IpInfos[:100]
+	}
+	return IpInfos
+}
+func addIPInfo(ip IPInfo) {
+	flag := false
+	for _, p := range IpInfos {
+		if p.IP == ip.IP {
+			p.Count += 1
+			flag = true
+			break
+		}
+	}
+	if !flag {
+		ip.Count = 2
+		IpInfos = append(IpInfos, &ip)
+	}
 }
